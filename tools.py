@@ -59,10 +59,10 @@ def lookup_plant(plant_name: str) -> dict:
             "plant": _plant_db[normalized]
         }
     
-    for plant in _plant_db:
-        if(plant["display_name"] == normalized):
+    for plant in _plant_db.values():
+        if(plant["display_name"].lower() == normalized):
             return {"found": True, "plant": plant}
-        elif(plant["scientific_name"] == normalized):
+        elif(plant["scientific_name"].lower() == normalized):
             return {"found": True, "plant": plant}
         elif(normalized in [a.lower() for a in plant["aliases"]]):
             return {"found": True, "plant": plant}
