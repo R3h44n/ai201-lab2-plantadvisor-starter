@@ -73,6 +73,9 @@ SYSTEM_PROMPT = (
     "say so clearly and offer general guidance based on what the user describes.\n\n"
     "Keep your advice practical and specific. Cite the source of your information "
     "when you have it (e.g., 'According to the care data for your monstera...')."
+    "When lookup_plant returns found: False, do NOT provide specific care numbers from "
+    "memory. Acknowledge the plant isn't in your database, offer general guidance for that "
+    "plant type, and point the user to an authoritative source for specifics.\n\n"
 )
 
 # ──────────────────────────────────────────────

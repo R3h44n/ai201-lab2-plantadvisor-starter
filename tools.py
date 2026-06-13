@@ -71,8 +71,11 @@ def lookup_plant(plant_name: str) -> dict:
         "name": normalized,
         "message": (
             f"'{plant_name.strip()}' is not in the plant care database. "
-            "Tell the user this specific plant isn't in your database, then offer "
-            "general houseplant care guidance based on any symptoms or details they describe."
+            "Do not invent or recall specific care numbers (watering frequency, exact light "
+            "levels, fertilizer schedules) for it. Tell the user plainly that this plant isn't "
+            "in your database, then offer general guidance based on the plant type or any "
+            "symptoms they describe, and point them to a reliable source (e.g., a horticultural "
+            "society) for specifics."
         ),
     }
 
