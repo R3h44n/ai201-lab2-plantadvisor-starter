@@ -132,4 +132,49 @@ def run_agent(user_message: str, history: list) -> str:
 
     Before writing code, complete specs/agent-loop-spec.md.
     """
-    return "🌱 Agent not yet implemented. Complete Milestone 2 to activate the Plant Advisor."
+    
+    # 1. system prompt → history → new user message
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+
+    for msg in history:
+        messages.append({"role": msg["role"], "content": msg["content"]})
+
+    messages.append({"role": "user", "content": user_message})
+    
+    # 2. Tool-calling loop
+    for _ in range(MAX_TOOL_ROUNDS):
+        response = _client.chat.completions.create(
+            model=LLM_MODEL,
+            messages=messages,
+            tools=TOOL_DEFINITIONS,
+            tool_choice="auto",
+        )
+        assistant_message = response.choices[0].message
+
+        # (a) No tool calls → final answer, exit
+        if not assistant_message.tool_calls:
+            return assistant_message.content or "Sorry — I couldn't generate a response. Could you rephrase?"
+
+        # Assistant message MUST be appended before any tool results
+        messages.append(assistant_message)
+
+        # Execute each requested tool, append its result
+        for tool_call in assistant_message.tool_calls:
+            tool_name = tool_call.function.name
+            raw_args = tool_call.function.arguments
+            tool_args = json.loads(raw_args) if raw_args else {}
+            if not isinstance(tool_args, dict):   # handles arguments == "null"
+                tool_args = {}
+            tool_result = dispatch_tool(tool_name, tool_args)
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tool_call.id,
+                "content": tool_result,
+            })
+
+    # (b) Hit MAX_TOOL_ROUNDS — force one final text answer
+    final = _client.chat.completions.create(
+        model=LLM_MODEL,
+        messages=messages,
+    )
+    return final.choices[0].message.content or "I wasn't able to finish that lookup — could you try again?"
