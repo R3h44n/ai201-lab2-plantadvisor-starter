@@ -1,4 +1,5 @@
-from tools import lookup_plant
+import sys
+from ..tools import lookup_plant
 
 print(lookup_plant("SNAKE PLANT"))     # strip+lower → matches display name?
 print()
